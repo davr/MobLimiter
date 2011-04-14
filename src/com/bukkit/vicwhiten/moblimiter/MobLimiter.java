@@ -20,6 +20,8 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.config.Configuration;
+import org.bukkit.entity.Squid;
+import org.bukkit.entity.CreatureType;
 
 //import com.nijikokun.bukkit.Permissions.Permissions;
 
@@ -72,16 +74,14 @@ public class MobLimiter extends JavaPlugin
 	
 	public int getMobAmount(World world)
 	{
+		int sum=0;
 		List<LivingEntity> mobs = world.getLivingEntities();
 		for(int j=0; j<mobs.size(); j++)
 		{
-			if(!Creature.class.isInstance(mobs.get(j)))
-			{
-				mobs.remove(j);
-				j--;
-			}
+			if(mobs.get(j) instanceof Squid)
+				sum++;
 		}
-		return mobs.size();
+		return sum;
 	}
 	
 	public void purgeMobs(World world)
@@ -92,8 +92,10 @@ public class MobLimiter extends JavaPlugin
 			if(Creature.class.isInstance(mobs.get(j)))
 			{
 				LivingEntity mob = mobs.remove(j);
-				mob.remove();
-				j--;
+				if(mob instanceof Squid) {
+					mob.remove();
+					j--;
+				}
 			}
 		}
 	}
@@ -136,10 +138,11 @@ public class MobLimiter extends JavaPlugin
 		
 		public void onCreatureSpawn(CreatureSpawnEvent event)
 		{	
-			if(plugin.mobMax > -1 && plugin.getMobAmount(event.getEntity().getWorld()) >= plugin.mobMax)
-			{
-				
-				event.setCancelled(true);
+			if(event.getEntity() instanceof Squid) {
+				if(plugin.mobMax > -1 && plugin.getMobAmount(event.getEntity().getWorld()) >= plugin.mobMax)
+				{
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
