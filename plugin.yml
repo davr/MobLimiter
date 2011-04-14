@@ -1,15 +1,13 @@
-name: MobLimiter
+name: SquidLimiter
 version: 1.1
-description: Allows you to set a mob limit and blacklist on your server
-author: VicWhiten
-website: www.github.com/VicWhiten
+description: Limit the number of squids and stuff
+author: VicWhiten_and_davr
+website: www.github.com/davr/MobLimiter
 main: com.bukkit.vicwhiten.moblimiter.MobLimiter
 commands:
   moblimiter:
-    description: Use a MobLimiter command
+    description: Use a SquidLimiter command
     usage: |
            /<command> [subcommand] [type]
-           Example: /<command> setmax 1000- sets the mob max to 1000
-           Example: /<command> purge - removes all mobs/creatures
-           Example: /<command> addblacklist pig - blacklists pigs from your server
-           Example: /<command> removeblacklist pig - allows pigs to spawn on the server
+           Example: /<command> setmax 1000- sets the squid max to 1000
+           Example: /<command> purge - removes all squids
