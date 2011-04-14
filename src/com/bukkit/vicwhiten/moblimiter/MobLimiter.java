@@ -29,7 +29,6 @@ public class MobLimiter extends JavaPlugin
 {
 
 	private final MobLimiterEntityListener entityListener = new MobLimiterEntityListener(this);
-	public ArrayList<String> mobBlacklist;
 	public int mobMax;
 	public Configuration config;
 //	public GroupManager gm;
@@ -64,7 +63,6 @@ public class MobLimiter extends JavaPlugin
  
 		config = this.getConfiguration();
 		setupMobMax();
-		setupBlacklist();
 		pm.registerEvent(Event.Type.CREATURE_SPAWN, this.entityListener, Event.Priority.Normal, this);
 		getCommand("moblimiter").setExecutor(new MobLimiterCommand(this));
 		
@@ -105,61 +103,8 @@ public class MobLimiter extends JavaPlugin
 		config.load();
 		mobMax = config.getInt("mob-max", -1);
 		config.setProperty("mob-max", mobMax);
-		config.save();
-	}
-	
-	public void setupBlacklist()
-	{
-		config.load();
-		mobBlacklist = new ArrayList<String>();
-		try{
-			String[] blacklist = config.getString("mob-blacklist").split(" ");
-			for(String mob : blacklist)
-			{
-				mobBlacklist.add(mob);
-			}
-		}catch(Exception e){
-			config.setProperty("mob-blacklist", "");
-		}
-	}
-	
-	public void addBlackList(String type)
-	{
-		config.load();
-		mobBlacklist.add(type.toLowerCase());
-		String blacklist = "";
-		for(String mob : mobBlacklist)
-		{
-			blacklist += mob + " ";
-		}
-		config.setProperty("mob-blacklist",	blacklist.trim());
-		config.save();
 
-	}
-	
-	public boolean removeBlackList(String type)
-	{
-		config.load();
-		try{
-		boolean wasThere = mobBlacklist.remove(type.toLowerCase());
-		if(!wasThere)
-		{
-			return false;
-		}
-		}catch(Exception e)
-		{
-			System.out.println(e);
-			System.out.println(e.getMessage());
-			return false;
-		}
-		String blacklist = "";
-		for(String mob : mobBlacklist)
-		{
-			blacklist += mob + " ";
-		}
-		config.setProperty("mob-blacklist",	blacklist.trim());
 		config.save();
-		return true;
 	}
 	
 	public void setMobMax(int newMax)
@@ -194,10 +139,6 @@ public class MobLimiter extends JavaPlugin
 			if(plugin.mobMax > -1 && plugin.getMobAmount(event.getEntity().getWorld()) >= plugin.mobMax)
 			{
 				
-				event.setCancelled(true);
-			}
-			if(plugin.mobBlacklist.contains(event.getCreatureType().getName().toLowerCase()))
-			{
 				event.setCancelled(true);
 			}
 		}
@@ -266,40 +207,6 @@ public class MobLimiter extends JavaPlugin
 	    	{
 	    		sender.sendMessage("Mob Max: " + mobMax);
 	    		return true;
-	    	}
-	    	//blacklist command
-	    	if(args.length == 1 && args[0].compareTo("blacklist") == 0)
-	    	{
-	    		String mobs = "";
-	    		boolean ran = false;
-	    		for(String mob : mobBlacklist)
-	    		{
-	    			mobs += mob + ", ";
-	    			ran = true;
-	    		}
-	    		if(ran)
-	    			mobs = mobs.substring(0,mobs.length() -2);
-	    		sender.sendMessage("BLACKLIST: " + mobs);
-	    		return true;
-	    	}
-	    	//add to blacklist command
-	    	if(args.length == 2 && args[0].compareTo("addblacklist") == 0)
-	    	{
-	    		addBlackList(args[1]);
-	    		sender.sendMessage("Added " + args[1] + " to Blacklist");
-	    		return true;
-	    	}
-	    	if(args.length == 2 && args[0].compareTo("removeblacklist") == 0)
-	    	{
-	    		boolean didWork = removeBlackList(args[1]);
-	    		if(didWork)
-	    		{
-	    			sender.sendMessage("Removed " + args[1] + " from Blacklist");
-	    			return true;
-	    		}else{
-	    			sender.sendMessage("Type not found in Blacklist");
-	    			return true;
-	    		}
 	    	}
 	    	return false;
 	    }	
