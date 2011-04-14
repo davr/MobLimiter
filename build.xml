@@ -1,0 +1,38 @@
+<project name="MobLimiter" default="deploy" basedir=".">
+    <target name="init">
+        <property name="launcher" value="run.sh" />
+        <property name="sourceDir" value="src" />
+        <property name="outputDir" value="bin" />
+        <property name="libdir" value="lib/" />
+        <property name="jarname" value="MobLimiter" />
+        <property name="config" value="config/" />
+        <property name="dist" value="/var/www" />
+    </target>
+    <target name="clean" depends="init">
+        <deltree dir="${outputDir}" />
+    </target>
+    <target name="prepare" depends="clean">
+        <mkdir dir="${outputDir}" />
+    </target>
+    <target name="compile" depends="prepare">
+        <javac destdir="${outputDir}" debug="on">
+            <src path="${sourceDir}"/>
+            <classpath>
+                <fileset dir="${libdir}">
+                    <include name="*.jar" />
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+    <target name="deploy" depends="compile,init">
+          <zip destfile="${dist}/plugins/${jarname}.jar">
+            <fileset dir="${outputDir}"/>
+            <fileset dir="${config}"/>
+          </zip>
+    </target>
+    <target name="run" depends="deploy">
+        <exec executable="bash">
+          <arg line="${launcher}"/>
+        </exec>
+    </target>
+</project>
