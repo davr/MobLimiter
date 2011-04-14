@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.entity.EntityListener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -38,6 +39,7 @@ public class MobLimiter extends JavaPlugin
 {
 
 	private final MobLimiterEntityListener entityListener = new MobLimiterEntityListener(this);
+	public MobLimiterPlayerListener pls = new MobLimiterPlayerListener();
 	public int mobMax;
 	public int animalCreep;
 	public int mobCreep;
@@ -76,7 +78,7 @@ public class MobLimiter extends JavaPlugin
 		config = this.getConfiguration();
 		setupMobMax();
 		pm.registerEvent(Event.Type.CREATURE_SPAWN, this.entityListener, Event.Priority.Normal, this);
-		pm.registerEvent(Event.Type.PLAYER_MOVE, this.entityListener, Event.Priority.Normal, this);
+		pm.registerEvent(Event.Type.PLAYER_MOVE, this.pls, Event.Priority.Normal, this);
 		getCommand("moblimiter").setExecutor(new MobLimiterCommand(this));
 		
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -146,16 +148,33 @@ public class MobLimiter extends JavaPlugin
     		return true;
     	}else return false;
     }
+
+	private class MobLimiterPlayerListener extends PlayerListener {
+
+		public Queue<Location> spawnq;
+
+		public MobLimiterPlayerListener() {
+			spawnq = new LinkedList<Location>();
+		}
+
+		public void onPlayerMove(PlayerMoveEvent event) {
+			int n=0;
+			while(!spawnq.isEmpty()) {
+				Location loc = spawnq.remove();
+				loc.getWorld().spawnCreature(loc, CreatureType.CREEPER);
+				n++;
+			}
+			if(n>0)
+				System.out.println(n+" creeped");
+		}
+	}
 	
 	private class MobLimiterEntityListener extends EntityListener {
 
 		private MobLimiter plugin;
 
-		private Queue<Location> spawnq;
-
 		public MobLimiterEntityListener(MobLimiter plug) {
 			plugin = plug;
-			spawnq = new LinkedList<Location>();
 		}
 		
 		public void onCreatureSpawn(CreatureSpawnEvent event)
@@ -174,18 +193,13 @@ public class MobLimiter extends JavaPlugin
 					if(rand.nextInt(100) < mobCreep) creepo=true;
 
 				if(creepo) {
-					spawnq.add(event.getEntity().getLocation().clone());
+//					event.getEntity().getWorld().spawnCreature(event.getEntity().getLocation(), CreatureType.CREEPER);
+					plugin.pls.spawnq.add(event.getEntity().getLocation().clone());
 					event.setCancelled(true);
 				}	
 			}
 		}
 
-		public void onPlayerMove(PlayerMoveEvent event) {
-			while(!spawnq.isEmpty()) {
-				Location loc = spawnq.remove();
-				loc.getWorld().spawnCreature(loc, CreatureType.CREEPER);
-			}
-		}
 	}
 	
 
