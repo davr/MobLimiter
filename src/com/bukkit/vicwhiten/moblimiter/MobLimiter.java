@@ -3,7 +3,7 @@ package com.bukkit.vicwhiten.moblimiter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.anjocaido.groupmanager.GroupManager;
+//import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.util.config.Configuration;
 
-import com.nijikokun.bukkit.Permissions.Permissions;
+//import com.nijikokun.bukkit.Permissions.Permissions;
 
 
 
@@ -32,8 +32,8 @@ public class MobLimiter extends JavaPlugin
 	public ArrayList<String> mobBlacklist;
 	public int mobMax;
 	public Configuration config;
-	public GroupManager gm;
-	public Permissions perm;
+//	public GroupManager gm;
+//	public Permissions perm;
 
 	public void onDisable()
 	{
@@ -46,22 +46,22 @@ public class MobLimiter extends JavaPlugin
 
 		PluginManager pm = getServer().getPluginManager();
 		
-		 Plugin p = this.getServer().getPluginManager().getPlugin("GroupManager");
-	        if (p != null) {
-	            if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
-	                this.getServer().getPluginManager().enablePlugin(p);
-	            }
-	            gm = (GroupManager) p;
-	        } 
-	        
-	        p = this.getServer().getPluginManager().getPlugin("Permissions");
-	        if (p != null) {
-	            if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
-	                this.getServer().getPluginManager().enablePlugin(p);
-	            }
-	            perm = (Permissions) p;
-	        } 
-	 
+/*		Plugin p = this.getServer().getPluginManager().getPlugin("GroupManager");
+		if (p != null) {
+			if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
+				this.getServer().getPluginManager().enablePlugin(p);
+			}
+			gm = (GroupManager) p;
+		} 
+		
+		p = this.getServer().getPluginManager().getPlugin("Permissions");
+		if (p != null) {
+			if (!this.getServer().getPluginManager().isPluginEnabled(p)) {
+				this.getServer().getPluginManager().enablePlugin(p);
+			}
+			perm = (Permissions) p;
+		} */
+ 
 		config = this.getConfiguration();
 		setupMobMax();
 		setupBlacklist();
@@ -179,12 +179,6 @@ public class MobLimiter extends JavaPlugin
     	if(player.isOp())
     	{
     		return true;
-    	}else if(gm != null)
-    	{
-        return gm.getWorldsHolder().getWorldPermissions(player).has(player,permission);
-    	}else if(perm != null)
-    	{
-    	return perm.getHandler().has(player, permission);
     	}else return false;
     }
 	
